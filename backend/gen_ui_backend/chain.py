@@ -5,8 +5,12 @@ from langchain_core.messages import AIMessage, HumanMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables import RunnableConfig
 from langchain_openai import ChatOpenAI
+from langchain_google_genai import GoogleGenerativeAI
 from langgraph.graph import END, StateGraph
 from langgraph.graph.graph import CompiledGraph
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from gen_ui_backend.tools.github import github_repo
 from gen_ui_backend.tools.invoice import invoice_parser
@@ -35,7 +39,7 @@ def invoke_model(state: GenerativeUIState, config: RunnableConfig) -> Generative
             MessagesPlaceholder("input"),
         ]
     )
-    model = ChatOpenAI(model="gpt-4o", temperature=0, streaming=True)
+    model = GoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0.9)
     tools = [github_repo, invoice_parser, weather_data]
     model_with_tools = model.bind_tools(tools)
     chain = initial_prompt | model_with_tools
